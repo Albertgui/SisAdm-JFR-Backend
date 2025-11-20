@@ -1,4 +1,4 @@
-import { pool } from "../db.js";
+import { pool } from '../db.js';
 
 // Traer todas las personas
 export const getAllPersona = async (req, res) => {
