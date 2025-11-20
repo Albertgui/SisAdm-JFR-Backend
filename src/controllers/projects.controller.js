@@ -1,6 +1,19 @@
 import { pool } from '../db.js';
 import { checkPersonaExists } from './person.controller.js';
 
+// Ver proyectos en tabla
+export const getProyectosConDetalles = async (req, res) => {
+    try {
+        const { rows } = await pool.query('SELECT * FROM vista_proyectos_por_persona');
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron proyectos.' });
+        }
+        res.status(200).json({message: 'Consulta de proyectos exitosa', data: rows});
+    } catch (error) {
+        res.status(500).json({ message: 'Error interno del servidor' });
+    }
+}
+
 // Obtener todos los proyectos
 export const getAllProyectos = async (req, res) => {
     try {
@@ -36,7 +49,7 @@ export const createProyecto = async (req, res) => {
         const presupuesto = body.presupuesto;
         const fecha_inicio = body.fecha_inicio;
         const fecha_fin = body.fecha_fin;
-        const id_persona = body.id;
+        const id_persona = body.id_persona;
         const personaExist = checkPersonaExists(id_persona);
         if (!personaExist) {
             return res.status(404).json({message: 'La persona con ese id no existe y no se puede asociar al proyecto.'});
@@ -79,19 +92,5 @@ export const deleteProyecto = async (req, res) => {
         res.json({message: 'Proyecto eliminado con éxito', data: rows});
     } catch (error) {
         res.status(500).json({message: 'Error interno del servidor'});
-    }
-}
-
-// Ver proyectos en tabla
-export const getProyectosConDetalles = async (req, res) => {
-    try {
-        const sql = 'SELECT * FROM vista_proyectos_por_persona';
-        const { rows } = await pool.query(sql);
-        if (rows.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron proyectos.' });
-        }
-        res.status(200).json({message: 'Consulta de proyectos exitosa', data: rows});
-    } catch (error) {
-        res.status(500).json({ message: 'Error interno del servidor' });
     }
 }

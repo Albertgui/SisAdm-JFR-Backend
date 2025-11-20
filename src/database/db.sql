@@ -42,8 +42,10 @@ INSERT INTO persona (nombre, cedula) VALUES ('Carlos Piña', '12345678');
 
 CREATE VIEW vista_proyectos_por_persona AS
 SELECT
+    p.id,
     p.nombre,
     p.cedula,
+    py.id_proyecto,
     py.nombre_proyecto,
     py.presupuesto,
     py.fecha_inicio,
