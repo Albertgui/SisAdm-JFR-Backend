@@ -1,4 +1,5 @@
 import { pool } from '../db.js';
+import { checkPersonaExists } from './person.controller.js';
 
 // Obtener todos los proyectos
 export const getAllProyectos = async (req, res) => {
@@ -35,9 +36,62 @@ export const createProyecto = async (req, res) => {
         const presupuesto = body.presupuesto;
         const fecha_inicio = body.fecha_inicio;
         const fecha_fin = body.fecha_fin;
-        const {rows} = pool.query('INSERT INTO proyecto (nombre_proyecto, presupuesto, fecha_inicio, fecha_fin) VALUES ($1, $2, $3, $4) RETURNING *', [nombre_proyecto, presupuesto, fecha_inicio, fecha_fin]);
+        const id_persona = body.id;
+        const personaExist = checkPersonaExists(id_persona);
+        if (!personaExist) {
+            return res.status(404).json({message: 'La persona con ese id no existe y no se puede asociar al proyecto.'});
+        }
+        const {rows} = pool.query('INSERT INTO proyecto (id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin) VALUES ($1, $2, $3, $4, $5) RETURNING *', [id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin]);
         res.json({message: 'Proyecto creado con éxito', data: rows});
     } catch (error) {
         res.status(500).json({message: 'Error interno del servidor'})
+    }
+}
+
+// Editar un proyecto
+export const editProyecto = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const body = req.body;
+        const nombre_proyecto = body.nombre_proyecto.trim();
+        const presupuesto = body.presupuesto;
+        const fecha_inicio = body.fecha_inicio;
+        const fecha_fin = body.fecha_fin;
+        const id_persona = body.id;
+        const personaExist = checkPersonaExists(id_persona);
+        if (!personaExist) {
+            return res.status(404).json({message: 'La persona con ese id no existe y no se puede asociar al proyecto.'});
+        }
+        const {rows} = pool.query('UPDATE proyecto SET id_persona = $1, nombre_proyecto = $2, presupuesto = $3, fecha_inicio = $4, fecha_fin = $5 WHERE id_proyecto = $6 RETURNING *' [id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin, id]);
+    } catch (error) {
+        
+    }
+}
+
+// Eliminar un proyecto
+export const deleteProyecto = async (req, res) => {
+    try {
+        const {id} = req.params;
+        const {rows} = await pool.query('DELETE FROM proyecto WHERE id_proyecto = $1 RETURNING *', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({message: 'No existe ese proyecto', data: rows});
+        }
+        res.json({message: 'Proyecto eliminado con éxito', data: rows});
+    } catch (error) {
+        res.status(500).json({message: 'Error interno del servidor'});
+    }
+}
+
+// Ver proyectos en tabla
+export const getProyectosConDetalles = async (req, res) => {
+    try {
+        const sql = 'SELECT * FROM vista_proyectos_por_persona';
+        const { rows } = await pool.query(sql);
+        if (rows.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron proyectos.' });
+        }
+        res.status(200).json({message: 'Consulta de proyectos exitosa', data: rows});
+    } catch (error) {
+        res.status(500).json({ message: 'Error interno del servidor' });
     }
 }

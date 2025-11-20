@@ -79,7 +79,7 @@ export const editPerson = async (req, res) => {
             });
         }
         const {rows} = await pool.query('UPDATE persona SET nombre = $1, cedula = $2 WHERE cedula = $2 RETURNING *', [nombre, cedula]);
-        if (rows.length < 1) {
+        if (rows.length === 0) {
             return res.status(404).json({message: 'Usuario no encontrado'});
         } 
         res.json({message: 'Persona editada con éxito', data: rows});
@@ -94,11 +94,19 @@ export const deletePerson = async (req, res) => {
         const {id} = req.params;
         const cedula = id.trim();
         const {rows} = await pool.query('DELETE FROM persona WHERE cedula = $1 RETURNING *', [cedula]);
-        if (rows.length < 1) {
+        if (rows.length === 0) {
             return res.status(404).json({message: 'Usuario no encontrado'});
         } 
         res.json({message: 'Se ha eliminado con éxito', data: rows});
     } catch (error) {
         res.status(500).json({message: 'Error interno del servidor'});
     }
+}
+
+// Función para saber si existe la persona para guardar el proyecto
+export const checkPersonaExists = async (id_persona) => {
+    const sql = 'SELECT COUNT(*) FROM persona WHERE id = $1'; 
+    const { rows } = await pool.query(sql, [id_persona]);
+    const count = parseInt(rows[0].count, 10); 
+    return count > 0;
 }

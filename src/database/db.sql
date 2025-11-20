@@ -39,3 +39,16 @@ FOR EACH ROW
 EXECUTE FUNCTION update_timestamp();
 
 INSERT INTO persona (nombre, cedula) VALUES ('Carlos Piña', '12345678');
+
+CREATE VIEW vista_proyectos_por_persona AS
+SELECT
+    p.nombre,
+    p.cedula,
+    py.nombre_proyecto,
+    py.presupuesto,
+    py.fecha_inicio,
+    py.fecha_fin
+FROM
+    persona AS p
+JOIN
+    proyecto AS py ON p.id = py.id_persona;
