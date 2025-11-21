@@ -17,7 +17,7 @@ export const getProyectosConDetalles = async (req, res) => {
 // Obtener todos los proyectos
 export const getAllProyectos = async (req, res) => {
     try {
-        const {rows} = await pool.query('SELECT * FROM proyecto as pro JOIN persona as per ON pro.id_persona = per.id');
+        const {rows} = await pool.query('SELECT * FROM proyecto as pro JOIN persona as per ON pro.id_persona = per.cedula');
         if (rows.length === 0) {
             return res.status(404).json({message: 'No hay registros'});
         }
@@ -45,6 +45,7 @@ export const getProyectoId = async (req, res) => {
 export const createProyecto = async (req, res) => {
     try {
         const body = req.body;
+        console.log(body)
         const nombre_proyecto = body.nombre_proyecto.trim();
         const presupuesto = body.presupuesto;
         const fecha_inicio = body.fecha_inicio;
@@ -52,7 +53,7 @@ export const createProyecto = async (req, res) => {
         const id_persona = body.id_persona;
         const personaExist = checkPersonaExists(id_persona);
         if (!personaExist) {
-            return res.status(404).json({message: 'La persona con ese id no existe y no se puede asociar al proyecto.'});
+            return res.status(404).json({message: 'La persona con esa cedula no existe y no se puede asociar al proyecto.'});
         }
         const {rows} = pool.query('INSERT INTO proyecto (id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin) VALUES ($1, $2, $3, $4, $5) RETURNING *', [id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin]);
         res.json({message: 'Proyecto creado con éxito', data: rows});
@@ -65,12 +66,13 @@ export const createProyecto = async (req, res) => {
 export const editProyecto = async (req, res) => {
     try {
         const { id } = req.params; 
-        const body = req.body; 
-        const nombre_proyecto = body.nombre_proyecto ? body.nombre_proyecto.trim() : null;
+        const body = req.body;
+        console.log(body) 
+        const nombre_proyecto = body.nombre_proyecto.trim();
         const presupuesto = body.presupuesto;
         const fecha_inicio = body.fecha_inicio;
         const fecha_fin = body.fecha_fin;
-        const cedula = body.cedula; 
+        const cedula = body.cedula.trim(); 
         const personaExist = await checkPersonaExists(cedula); 
         if (!personaExist) {
             return res.status(404).json({message: `La cédula ${cedula} no existe y no se puede asociar al proyecto.`});
