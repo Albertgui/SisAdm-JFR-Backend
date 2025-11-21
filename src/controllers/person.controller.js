@@ -7,7 +7,7 @@ export const getAllPersona = async (req, res) => {
         if (rows.length === 0) {
             return res.status(404).json({message: 'No hay registros'});
         }
-        res.json(rows);
+        res.status(200).json(rows);
     } catch (error) {
         res.status(500).json({message: 'Error interno del servidor'})
     }
@@ -105,8 +105,7 @@ export const deletePerson = async (req, res) => {
 
 // Función para saber si existe la persona para guardar el proyecto
 export const checkPersonaExists = async (id_persona) => {
-    const sql = 'SELECT COUNT(*) FROM persona WHERE id = $1'; 
-    const { rows } = await pool.query(sql, [id_persona]);
+    const { rows } = await pool.query('SELECT COUNT(*) FROM persona WHERE cedula = $1', [id_persona]);
     const count = parseInt(rows[0].count, 10); 
     return count > 0;
 }

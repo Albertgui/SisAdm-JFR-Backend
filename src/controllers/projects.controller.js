@@ -64,20 +64,24 @@ export const createProyecto = async (req, res) => {
 // Editar un proyecto
 export const editProyecto = async (req, res) => {
     try {
-        const {id} = req.params;
-        const body = req.body;
-        const nombre_proyecto = body.nombre_proyecto.trim();
+        const { id } = req.params; 
+        const body = req.body; 
+        const nombre_proyecto = body.nombre_proyecto ? body.nombre_proyecto.trim() : null;
         const presupuesto = body.presupuesto;
         const fecha_inicio = body.fecha_inicio;
         const fecha_fin = body.fecha_fin;
-        const id_persona = body.id;
-        const personaExist = checkPersonaExists(id_persona);
+        const cedula = body.cedula; 
+        const personaExist = await checkPersonaExists(cedula); 
         if (!personaExist) {
-            return res.status(404).json({message: 'La persona con ese id no existe y no se puede asociar al proyecto.'});
+            return res.status(404).json({message: `La cédula ${cedula} no existe y no se puede asociar al proyecto.`});
         }
-        const {rows} = pool.query('UPDATE proyecto SET id_persona = $1, nombre_proyecto = $2, presupuesto = $3, fecha_inicio = $4, fecha_fin = $5 WHERE id_proyecto = $6 RETURNING *' [id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin, id]);
+        const result = await pool.query('UPDATE proyecto SET id_persona = $1, nombre_proyecto = $2, presupuesto = $3, fecha_inicio = $4, fecha_fin = $5 WHERE id_proyecto = $6 RETURNING *', [cedula, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin, id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({message: `El proyecto con ID ${id} no existe o no se pudo editar.`});
+        }
+        res.json({message: 'Proyecto editado con éxito', data: result.rows});
     } catch (error) {
-        
+        res.status(500).json({message: 'Error interno del servidor'});
     }
 }
 

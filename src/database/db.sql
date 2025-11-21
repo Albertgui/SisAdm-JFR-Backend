@@ -1,14 +1,14 @@
 CREATE TABLE persona (
     id SERIAL PRIMARY KEY,
     nombre VARCHAR(255) NOT NULL,
-    cedula VARCHAR(20) UNIQUE NOT NULL,
+    cedula VARCHAR(10) UNIQUE NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE proyecto (
     id_proyecto SERIAL PRIMARY KEY,
-    id_persona INT NOT NULL,
+    id_persona VARCHAR(10) NOT NULL,
     nombre_proyecto VARCHAR(255) NOT NULL,
     presupuesto NUMERIC(10, 2) DEFAULT 0.00,
     fecha_inicio DATE,
@@ -17,7 +17,7 @@ CREATE TABLE proyecto (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT fk_persona
         FOREIGN KEY (id_persona)
-        REFERENCES Persona (id)
+        REFERENCES Persona (cedula)
         ON DELETE RESTRICT
 );
 
@@ -53,4 +53,4 @@ SELECT
 FROM
     persona AS p
 JOIN
-    proyecto AS py ON p.id = py.id_persona;
+    proyecto AS py ON p.cedula = py.id_persona;
