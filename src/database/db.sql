@@ -21,6 +21,19 @@ CREATE TABLE proyecto (
         ON DELETE RESTRICT
 );
 
+CREATE TABLE factura (
+    id SERIAL PRIMARY KEY,
+    id_proyecto INTEGER NOT NULL,
+    url_imagen TEXT NOT NULL,
+    nombre_archivo VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CONSTRAINT fk_proyecto_factura
+        FOREIGN KEY (id_proyecto)
+        REFERENCES proyecto (id_proyecto)
+        ON DELETE CASCADE
+);
+
 CREATE OR REPLACE FUNCTION update_timestamp()
 RETURNS TRIGGER AS $$
 BEGIN NEW.updated_at = CURRENT_TIMESTAMP;

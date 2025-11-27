@@ -1,6 +1,8 @@
 import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import personaRoutes from './routes/persona.routes.js'
 import projectRoutes from './routes/projects.routes.js'
 import { PORT } from './config.js';
@@ -11,6 +13,12 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Obtener ruta para guardar imágenes
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Usar rutas y controladores
 app.use(personaRoutes);
 app.use(projectRoutes);
 
