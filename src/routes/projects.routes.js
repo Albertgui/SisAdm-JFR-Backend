@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createProyecto, deleteProyecto, editProyecto, getAllProyectos, getProyectoId, getProyectosConDetalles } from '../controllers/projects.controller.js';
-import { getBillsId, upload, uploadFactura } from '../controllers/bills.controller.js';
+import { deleteBillsId, getBillsId, upload, uploadFactura } from '../controllers/bills.controller.js';
 
 const router = Router();
 
@@ -20,12 +20,15 @@ router.get('/project/:id/bills', getBillsId);
 router.post('/project', createProyecto);
 
 // Subir una factura
-router.post('/project/upload-img', upload.single('imagen'), uploadFactura);
+router.post('/project/upload-img', upload.single("imagen"), uploadFactura);
 
 // Editar un proyecto
 router.put('/project/:id', editProyecto);
 
 // Eliminar un proyecto
 router.delete('/project/:id', deleteProyecto);
+
+// Eliminar una factura
+router.delete('/project/:id/bills', deleteBillsId);
 
 export default router;

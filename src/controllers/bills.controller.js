@@ -1,23 +1,36 @@
 import { pool } from '../db.js';
 import multer from 'multer';
+import path from 'path'; 
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const NEW_UPLOADS_DIR = path.join(__dirname, '..', '..', '..', 'uploads');
+
+// Almacenamiento
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, '../uploads/');
+        cb(null, NEW_UPLOADS_DIR);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + path.extname(file.originalname));
     }
 });
 
+// Manejador de imágenes
 export const upload = multer({ 
     storage: storage,
     limits: { fileSize: 10 * 1024 * 1024 }
 });
 
+// Subir factura
 export const uploadFactura = async (req, res) => {
     try {
     const { id_proyecto } = req.body;
+    if (!id_proyecto) {
+        return res.status(400).json({ error: 'El ID del proyecto es requerido' });
+    }
     if (!req.file) {
         return res.status(400).json({ error: 'No se subió ningún archivo' });
     }
@@ -50,3 +63,18 @@ export const getBillsId = async (req, res) => {
     }
 };
 
+
+// Eliminar facturas
+export const deleteBillsId = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { rows } = await pool.query('DELETE FROM factura WHERE id = $1 RETURNING *', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({message: 'Factura no encontrada'});
+        } 
+        res.json({message: 'Se ha eliminado con éxito', data: rows});
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error al eliminar imágenes');
+    }
+};

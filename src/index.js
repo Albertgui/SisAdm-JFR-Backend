@@ -13,10 +13,10 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 
-// Obtener ruta para guardar imágenes
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const uploadsPath = path.join(__dirname, '..', '..', 'uploads'); 
+app.use('/uploads', express.static(uploadsPath))
 
 // Usar rutas y controladores
 app.use(personaRoutes);
