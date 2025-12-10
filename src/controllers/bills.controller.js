@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path'; 
 import { fileURLToPath } from 'url';
 
+// SE DEBE CREAR LA CARPETA UPLOADS FUERA DEL REPOSITORIO
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
