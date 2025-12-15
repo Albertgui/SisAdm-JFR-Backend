@@ -27,7 +27,7 @@ export const getAllProyectos = async (req, res) => {
     }
 }
 
-// Obtener todos los proyectos
+// Obtener un proyecto
 export const getProyectoId = async (req, res) => {
     try {
         const {id} = req.params;
@@ -45,7 +45,6 @@ export const getProyectoId = async (req, res) => {
 export const createProyecto = async (req, res) => {
     try {
         const body = req.body;
-        console.log(body)
         const nombre_proyecto = body.nombre_proyecto.trim();
         const presupuesto = body.presupuesto;
         const fecha_inicio = body.fecha_inicio;
@@ -58,7 +57,7 @@ export const createProyecto = async (req, res) => {
         const {rows} = pool.query('INSERT INTO proyecto (id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin) VALUES ($1, $2, $3, $4, $5) RETURNING *', [id_persona, nombre_proyecto, presupuesto, fecha_inicio, fecha_fin]);
         res.json({message: 'Proyecto creado con éxito', data: rows});
     } catch (error) {
-        res.status(500).json({message: 'Error interno del servidor'})
+        res.status(500).json({message: 'Error interno del servidor'});
     }
 }
 

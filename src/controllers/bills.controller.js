@@ -64,7 +64,6 @@ export const getBillsId = async (req, res) => {
     }
 };
 
-
 // Eliminar facturas
 export const deleteBillsId = async (req, res) => {
     try {

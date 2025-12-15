@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import personaRoutes from './routes/persona.routes.js'
 import projectRoutes from './routes/projects.routes.js'
+import loginRoutes from './routes/login.routes.js'
 import { PORT } from './config.js';
 
 const app = express();
@@ -21,6 +22,8 @@ app.use('/uploads', express.static(uploadsPath))
 // Usar rutas y controladores
 app.use(personaRoutes);
 app.use(projectRoutes);
+app.use(loginRoutes);
 
-app.listen(PORT);
-console.log('Escuchando en puerto:', PORT)
+app.listen(PORT, () => {
+    console.log('Escuchando en puerto:', PORT);
+});
